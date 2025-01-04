@@ -38,7 +38,6 @@ const login = async (req, res) => {
         if ((usersRaw?.length) === 0) {
             return res.status(400).json({ error: 'user not exist' })
         }
-        console.log(usersRaw)
         const isAuthorized = await verifyPassword(password, usersRaw[0].password)
         if (!isAuthorized) {
             return res.status(400).json({ error: 'Invalid password' });
