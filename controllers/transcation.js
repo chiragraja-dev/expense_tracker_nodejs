@@ -176,7 +176,6 @@ const getTransactionExcel = async (req, res) => {
     try {
         const pool = await connectToDb();
 
-        // Dynamically build the date condition
         let dateCondition = '';
         if (startDate && endDate) {
             dateCondition = `AND transactionDate BETWEEN @StartDate AND @EndDate`;
@@ -186,22 +185,18 @@ const getTransactionExcel = async (req, res) => {
             dateCondition = `AND transactionDate <= @EndDate`;
         }
 
-        // Build the query with the dynamic date condition
         const query = `SELECT * FROM transactions WHERE user_id = @UserId ${dateCondition}`;
 
-        // Prepare the request and bind parameters
         const request = pool.request().input('UserId', sql.Int, userId);
         if (startDate) request.input('StartDate', sql.DateTime, new Date(startDate));
         if (endDate) request.input('EndDate', sql.DateTime, new Date(endDate));
 
-        // Execute the query
         const result = await request.query(query);
 
-        // Create an Excel workbook and worksheet
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Transactions');
 
-        // Add column headers
+
         worksheet.columns = [
             { header: 'Transaction ID', key: 'id', width: 15 },
             { header: 'Comments', key: 'comments', width: 30 },
